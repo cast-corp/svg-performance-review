@@ -166,6 +166,19 @@ button.secondary:not(:disabled):hover {
 
 /* Results */
 
+.results-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.results-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+}
+
 .results-section.hidden {
   display: none;
 }

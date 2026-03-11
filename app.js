@@ -46,6 +46,7 @@
     charCount.textContent = '';
     btnAnalyze.disabled = true;
     resultsSection.classList.add('hidden');
+    $('#btn-export-json').style.display = 'none';
     $('#svg-preview').innerHTML = '';
     $('#preview-dimensions').textContent = '';
     $('#impact-results').innerHTML = '';
@@ -62,6 +63,8 @@
     }
   });
 
+  let latestAnalysisData = null;
+
   async function runAnalysis() {
     const source = input.value.trim();
     if (!source) return;
@@ -69,6 +72,7 @@
     btnAnalyze.disabled = true;
     btnAnalyze.textContent = 'Analyzing…';
     resultsSection.classList.remove('hidden');
+    $('#btn-export-json').style.display = 'none'; // Hide export until done
 
     $('#timing-results').innerHTML = '<div class="loading">Rendering SVG…</div>';
     $('#impact-results').innerHTML = '<div class="loading">Measuring page impact…</div>';
@@ -99,6 +103,19 @@
       renderFilters(staticResult.filterAnalysis, vp);
       renderMemory(staticResult.deep, staticResult.sourceSize, staticResult.filterAnalysis, vp);
       renderWarnings(staticResult.warnings);
+
+      // Save for export
+      latestAnalysisData = {
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent,
+        source: source,
+        metrics: {
+          timing,
+          static: staticResult
+        }
+      };
+      $('#btn-export-json').style.display = 'block';
+
     } catch (err) {
       $('#timing-results').innerHTML = `<div class="error">${esc(err.message)}</div>`;
     } finally {
@@ -106,6 +123,20 @@
       btnAnalyze.textContent = 'Analyze';
     }
   }
+
+  $('#btn-export-json').addEventListener('click', () => {
+    if (!latestAnalysisData) return;
+    const jsonStr = JSON.stringify(latestAnalysisData, null, 2);
+    const blob = new Blob([jsonStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `svg-perf-analysis-${Date.now()}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
 
   function renderTiming(timing, sourceSize) {
     const ms = timing.renderTime;
