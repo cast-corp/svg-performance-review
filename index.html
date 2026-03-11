@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SVG Performance Review</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>SVG Performance Review</h1>
+    <p class="subtitle">Paste SVG source to analyze rendering performance and detect bottlenecks</p>
+  </header>
+
+  <main>
+
+    <div class="sample-banner">
+      <div class="sample-banner-left">
+        <div class="sample-tag">Real Production Bug</div>
+        <h3 class="sample-title">The SVG that froze Safari for 35 seconds</h3>
+        <p class="sample-desc">
+          This is the actual SVG that caused severe performance issues in our production app. While it rendered in
+          <strong class="good-text">16 ms</strong> in Chrome, it took
+          <strong class="bad-text">34,990 ms</strong> in Safari — a <strong>2,096× difference</strong>.
+          The culprit: heavy use of <code>feTurbulence</code> and a large <code>feMorphology radius="36.7"</code> computed over
+          a 3,466 × 2,600 px region, which Safari executes entirely on the main thread.
+          Load it below and run the analysis in both browsers to experience the difference.
+        </p>
+        <div class="sample-stats">
+          <div class="sample-stat bad">
+            <span class="sample-stat-value">34,990 ms</span>
+            <span class="sample-stat-label">Safari render</span>
+          </div>
+          <div class="sample-stat-vs">vs</div>
+          <div class="sample-stat good">
+            <span class="sample-stat-value">16 ms</span>
+            <span class="sample-stat-label">Chrome render</span>
+          </div>
+          <div class="sample-stat-vs">→</div>
+          <div class="sample-stat neutral">
+            <span class="sample-stat-value">2,096×</span>
+            <span class="sample-stat-label">difference</span>
+          </div>
+        </div>
+      </div>
+      <div class="sample-banner-right">
+        <button id="btn-load-sample" class="btn-sample">Load Sample SVG</button>
+        <p class="sample-hint">Paste into editor, then hit <kbd>Analyze</kbd></p>
+      </div>
+    </div>
+
+    <section class="input-section">
+      <div class="textarea-wrap">
+        <textarea id="svg-input" placeholder="Paste your SVG source code here, or click 'Load Sample SVG' above..." spellcheck="false"></textarea>
+      </div>
+      <div class="textarea-actions">
+        <button id="btn-analyze" disabled>Analyze</button>
+        <button id="btn-clear" class="secondary">Clear</button>
+        <span id="char-count" class="meta"></span>
+      </div>
+    </section>
+
+    <section id="results-section" class="results-section hidden">
+      <div class="preview-row">
+        <div class="preview-wrap">
+          <div class="preview-label">Preview <span id="preview-dimensions" class="meta"></span></div>
+          <div id="svg-preview" class="preview-area"></div>
+        </div>
+      </div>
+
+      <div class="results-grid">
+
+        <div class="card timing-card">
+          <h2>Render Timing</h2>
+          <div id="timing-results" class="card-body"></div>
+        </div>
+
+        <div class="card impact-card">
+          <h2>Page Impact</h2>
+          <div id="impact-results" class="card-body"></div>
+        </div>
+
+        <div class="card hardware-card full-width">
+          <h2>Hardware Cost</h2>
+          <div id="hardware-results" class="card-body"></div>
+        </div>
+
+        <div class="card stats-card">
+          <h2>Element Stats</h2>
+          <div id="stats-results" class="card-body"></div>
+        </div>
+
+        <div class="card complexity-card">
+          <h2>Complexity</h2>
+          <div id="complexity-results" class="card-body"></div>
+        </div>
+
+        <div class="card filters-card">
+          <h2>Filter Analysis</h2>
+          <div id="filter-results" class="card-body"></div>
+        </div>
+
+        <div class="card memory-card">
+          <h2>Memory &amp; Resources</h2>
+          <div id="memory-results" class="card-body"></div>
+        </div>
+
+        <div class="card warnings-card full-width">
+          <h2>Issues &amp; Warnings</h2>
+          <div id="warnings-results" class="card-body"></div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <script src="analyzer.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
